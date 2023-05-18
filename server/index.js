@@ -1,6 +1,11 @@
-require("dotenv").config({path:__dirname+'/../.env'});
+require("dotenv").config({ path: __dirname + "/../.env" });
 const express = require("express");
 const cors = require("cors");
+
+const sequelize = require("./util/database");
+const {User} = require("./models/user");
+const {Post} = require("./models/post");
+
 const { PORT } = process.env;
 
 const { register, login } = require("./controllers/auth");
@@ -26,4 +31,15 @@ app.post("/posts", isAuthenticated, addPost);
 app.put("/posts/:id", isAuthenticated, editPost);
 app.delete("/posts/:id", isAuthenticated, deletePost);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+User.hasMany(Post);
+Post.belongsTo(User);
+
+sequelize
+  // .sync({ force: true }) // Use in development to reset DB.  DROPS TABLES
+  .sync()
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => {
+    console.log(err);
+  });

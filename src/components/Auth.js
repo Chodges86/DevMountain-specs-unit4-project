@@ -27,6 +27,7 @@ const Auth = () => {
         authCtx.login(data.token, data.exp, data.userId)
       })
       .catch((err) => {
+        console.log("Error", err)
         setPassword("");
         setUsername("");
       });
